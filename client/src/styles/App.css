@@ -1,0 +1,41 @@
+html, body {
+  background-color: #2B2B2B;
+  overflow-x: hidden; 
+}
+
+.Home {
+  background-color: #2B2B2B;
+  text-align: center;
+}
+
+.Home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.chat-content {
+  overflow-y: auto;
+  flex: 1;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.prompt-box {
+  border-radius: 75px;
+  background-color: #444444;
+  color: #D9D9D9;
+  padding: 10px;
+  padding-left: 15px;
+  min-width: 80vh;
+  outline: none;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.prompt-box::placeholder {
+  color: #6E6C6C;
+}
+

@@ -1,0 +1,26 @@
+.sidebar {
+    background-color: #1A1A1A;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    padding-top: 20px;
+    padding: 20px;
+    border-right: 1.5px solid #1FB6CE;
+    width: 45px; /* Default width to fit the icon */
+    transition: width 0.3s ease-in-out;
+}
+
+.sidebar.open {
+    width: 15vw;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px;
+}
+.menu-icon {
+    color: #D9D9D9;
+    font-size: 25px;
+}

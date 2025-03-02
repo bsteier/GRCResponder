@@ -1,24 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from 'react';
+import './styles/App.css';
+import Sidebar from './components/Sidebar.tsx';
 
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+    if(isSidebarOpen){
+      console.log("OPEN");
+    }
+    else{
+      console.log("CLOSE");
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="Home">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar}/>
+      <div className="Home-content">
+        <div className="chat-content">
+          <p>memo</p>
+        </div>
+        <input type="text" className="prompt-box" placeholder="Enter a prompt for GRCResponder"/>
+      </div>
     </div>
   );
 }
