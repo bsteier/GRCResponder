@@ -4,23 +4,61 @@
     flex-direction: column;
     position: fixed;
     height: 100vh;
-    padding-top: 20px;
-    padding: 20px;
     border-right: 1.5px solid #1FB6CE;
-    width: 45px; /* Default width to fit the icon */
+    width: 74px; /* Width to fit the icon */
     transition: width 0.3s ease-in-out;
+    overflow: hidden;
 }
 
 .sidebar.open {
-    width: 15vw;
+    width: 235px;
 }
 
 .sidebar-header {
     display: flex;
     justify-content: flex-start;
-    padding: 10px;
+    flex-direction: column;
+    margin-bottom: 20px;
 }
-.menu-icon {
+
+.sidebar-icon {
     color: #D9D9D9;
-    font-size: 25px;
+    padding: 25px;
+    font-size: 24px;
+}
+
+.sidebar-icon:hover {
+    background-color: #3c3c3cc3 ;
+}
+
+.sidebar-content {
+    opacity: 1;
+    overflow-y: auto;
+    transition-delay: 0.2s;
+    transition: opacity 0.4s ease-in;
+}
+
+.past-chats {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-left: 10px;
+}
+.time-title {
+    color: #EDEDED;
+    font-weight: bold;
+    font-size: 14.5px;
+    margin: 10px;
+}
+.chat-title {
+    color: #6E6C6C;
+    font-size: 14px;
+    margin: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.hidden {
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
 }
