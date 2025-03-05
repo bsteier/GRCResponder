@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import './styles/App.css';
 import Sidebar from './components/Sidebar.tsx';
+import Tooltip from './components/Tooltip.tsx';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

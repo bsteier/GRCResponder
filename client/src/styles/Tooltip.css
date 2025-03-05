@@ -1,0 +1,21 @@
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+    overflow: auto;
+}
+.tooltip {
+    position: absolute;
+    background-color: #F2F2F2;
+    color: black;
+    border-radius: 3px;
+    font-size: 12px;
+    margin: 3px;
+    padding: 5px;
+    z-index: 1000;
+    white-space: nowrap;
+    top: 100%; /* Position below the trigger */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    display: block;
+
+}
