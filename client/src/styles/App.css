@@ -1,24 +1,29 @@
 html, body {
   background-color: #2B2B2B;
   overflow-x: hidden; 
+  height: 100%;
 }
 
 .Home {
   background-color: #2B2B2B;
   text-align: center;
+  display: flex;
+  flex-direction: row;
 }
 
 .Home-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   min-height: 100vh;
+  flex-grow: 1;
+  box-sizing: border-box;
 }
 
 .chat-content {
   overflow-y: auto;
-  flex: 1;
+  flex-grow: 1;
   padding: 10px;
   margin-bottom: 10px;
 }
@@ -27,15 +32,27 @@ html, body {
   border-radius: 75px;
   background-color: #444444;
   color: #D9D9D9;
-  padding: 10px;
-  padding-left: 15px;
-  min-width: 80vh;
+  padding: 15px;
+  padding-left: 20px;
+  max-width: 750px;
+  min-width: 250px;
+  width: 100%;
   outline: none;
   margin-bottom: 10px;
   font-size: 15px;
+  border: 0;
+  box-sizing: border-box;
 }
 
 .prompt-box::placeholder {
   color: #6E6C6C;
 }
 
+.chat-content {
+  display: flex;
+  flex-direction: column-reverse;
+  max-width: 775px;
+  min-width: 250px;
+  width: 100%;
+  overflow-y: auto;
+}

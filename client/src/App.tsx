@@ -2,9 +2,11 @@ import React, {useState} from 'react';
 import './styles/App.css';
 import Sidebar from './components/Sidebar.tsx';
 import Tooltip from './components/Tooltip.tsx';
+import MessageBox from './components/MessageBox.tsx';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [query, setQueryValue] = useState('');
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -21,9 +23,15 @@ function App() {
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar}/>
       <div className="Home-content">
         <div className="chat-content">
-          <p>memo</p>
+          <MessageBox isUserMessage={true}>Meeowowow mfnka; nkfre ejipa jfeiank nfke;wn nkew nk;eq</MessageBox>
         </div>
-        <input type="text" className="prompt-box" placeholder="Enter a prompt for GRCResponder"/>
+        <input 
+          type="text" 
+          className="prompt-box" 
+          placeholder="Enter a prompt for GRCResponder"
+          value={query}
+          onChange={setQueryValue}  
+        />
       </div>
     </div>
   );

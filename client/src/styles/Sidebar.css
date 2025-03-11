@@ -2,7 +2,8 @@
     background-color: #1A1A1A;
     display: flex;
     flex-direction: column;
-    position: fixed;
+    position: sticky;
+    top: 0;
     height: 100vh;
     border-right: 1.5px solid #1FB6CE;
     width: 74px; /* Width to fit the icon */
