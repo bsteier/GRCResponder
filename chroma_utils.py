@@ -74,11 +74,15 @@ def uploadToChroma(collection: Collection, embedding_args: str, pdf_text: str, d
     ]
     
     ids = [f'{doc["document_id"]}_{i}' for i in range(len(chunks))]
+    existing_ids = collection.get(ids=ids)
+    if existing_ids["ids"]:
+        print(f"Document {doc['document_id']} already exists in ChromaDB.")
+        return
     
     collection.add(
         ids=ids,
         metadatas=metadatas,
-        documents=chunks
+        documents=chunks,
     )
     
     print(f'Uploaded {doc["document_id"]} to ChromaDB')
