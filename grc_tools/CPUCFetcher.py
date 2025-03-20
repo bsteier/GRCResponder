@@ -4,7 +4,7 @@ from io import StringIO
 import csv
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-
+import time
 ## Class that will fetch the documents from the website
 
 
@@ -20,8 +20,9 @@ class CPUCFetcher:
 
     DOC_PREFIX = 'https://docs.cpuc.ca.gov'
 
-    def __init__(self):
+    def __init__(self, polite=True):
         self.session = None
+        self._polite = polite
         pass
     
     def startSession(self):
@@ -134,6 +135,9 @@ class CPUCFetcher:
         #print(f"Fetching documents from: {doc_url}")
 
         try:
+            # Add wait time to be polite to the server so we do not get in trouble
+            if self._polite:
+                time.sleep(1)
             response = self.session.get(doc_url,timeout=10)
         except requests.RequestException as e:
             print(f"Failed to fetch {doc_url} with exception: {e}")
