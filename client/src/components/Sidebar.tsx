@@ -5,19 +5,28 @@ import {MenuOutlined, EditOutlined} from "@ant-design/icons";
 interface SidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
+  newChat: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, newChat }) => {
   return (
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
             <MenuOutlined className="sidebar-icon" onClick={toggleSidebar}/>
-            <EditOutlined className="sidebar-icon" />
+            <EditOutlined className="sidebar-icon" onClick={newChat}/>
         </div>
         <div className={`sidebar-content ${isOpen ? "" : "hidden"}`}>
           <div className='past-chats'>
-            <span className='time-title'>Yesterday</span>
+            <span className='time-title'>Recent</span>
             <span className='chat-title'>Inventory Mangement Question</span>
+            <br></br>
+            <span className='time-title'>February</span>
+            <span className='chat-title'>sed do eiusmod</span>
+            <br></br>
+            <span className='time-title'>January</span>
+            <span className='chat-title'>dolor sit amet</span>
+            <span className='chat-title'>consectetur adipiscing elit</span>
+            <span className='chat-title'>tempor incididunt ut</span>
           </div>
         </div>
     </div>

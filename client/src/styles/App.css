@@ -21,13 +21,22 @@ html, body {
   box-sizing: border-box;
 }
 
-.chat-content {
+/* .chat-content {
   overflow-y: auto;
   flex-grow: 1;
   padding: 10px;
   margin-bottom: 10px;
-}
+} */
 
+.chat-content {
+  display: flex;
+  flex-direction: column-reverse;
+  max-width: 775px;
+  min-width: 250px;
+  width: 100%;
+  overflow-y: auto;
+  flex-grow: 1;
+}
 .prompt-box {
   border-radius: 75px;
   background-color: #444444;
@@ -48,11 +57,3 @@ html, body {
   color: #6E6C6C;
 }
 
-.chat-content {
-  display: flex;
-  flex-direction: column-reverse;
-  max-width: 775px;
-  min-width: 250px;
-  width: 100%;
-  overflow-y: auto;
-}
