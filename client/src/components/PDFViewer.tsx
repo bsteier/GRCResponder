@@ -20,29 +20,44 @@ const PdfViewer: React.FC = () => {
     loadPdf();
   }, []);
 
-  useEffect(() => {
-    const renderPage = async () => {
-      if (!pdf) return;
-
-      const page = await pdf.getPage(pageNumber);
-      const viewport = page.getViewport({ scale: 1.5 });
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const context = canvas.getContext("2d");
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-
-      const renderContext = {
-        canvasContext: context!,
-        viewport,
-      };
-
-      await page.render(renderContext).promise;
-    };
-
-    renderPage();
-  }, [pdf, pageNumber]);
+    useEffect(() => {
+        let renderTask: any; // Allows us to refresh the page (without it we get a canvas render error)
+        const renderPage = async () => {
+        if (!pdf) return;
+    
+        const page = await pdf.getPage(pageNumber);
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+    
+        const context = canvas.getContext("2d");
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+    
+        const renderContext = {
+            canvasContext: context!,
+            viewport,
+        };
+    
+        renderTask = page.render(renderContext);
+        try {
+            await renderTask.promise;
+        } catch (error) {
+            if (error?.name !== "RenderingCancelledException") {
+            console.error("Render failed:", error);
+            }
+        }
+        };
+    
+        renderPage();
+    
+        return () => {
+        if (renderTask) {
+            renderTask.cancel();
+        }
+        };
+    }, [pdf, pageNumber]);
+  
 
   const goToPrevPage = () => setPageNumber((prev) => Math.max(prev - 1, 1));
   const goToNextPage = () => setPageNumber((prev) => Math.min(prev + 1, numPages));

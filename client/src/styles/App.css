@@ -6,7 +6,7 @@ html, body {
 
 .Home {
   background-color: #2B2B2B;
-  text-align: center;
+  /* text-align: center; */
   display: flex;
   flex-direction: row;
 }
