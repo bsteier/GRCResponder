@@ -1,6 +1,7 @@
 import chromadb
 from sentence_transformers import SentenceTransformer
-import pdfplumber
+# import pdfplumber
+import fitz
 from io import BytesIO
 from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -30,9 +31,15 @@ def addToChroma(docs_metadata: list, collection: Collection, embedding_args: dic
             print(f'Failed to access PDF {doc_link} with exception: {e}')
             continue
 
-        pdf_file = BytesIO(pdf_response.content)
-        pdf = pdfplumber.open(pdf_file)
-        pdf_text = '\n'.join([page.extract_text() for page in pdf.pages if page.extract_text()])
+        pdf_file = BytesIO(pdf_response.content) 
+
+        pdf = fitz.open(stream=pdf_file, filetype='pdf')
+        pdf_text = ''
+        for page in pdf:
+            pdf_text += page.get_text('text')
+            pdf_text += '\n\n'
+        # pdf = pdfplumber.open(pdf_file)
+        # pdf_text = '\n'.join([page.extract_text() for page in pdf.pages if page.extract_text()])
 
         uploadToChroma(collection, embedding_args, pdf_text, doc)
 
@@ -56,10 +63,28 @@ def createSession():
         print(f'Failed to start session:{e}')
         raise e
 
+def createChunks(pdf_text: str, max_chunk_size: int) -> list:
+    # this function will split the text into paragraphs that have size less than or equal to max_chunk_size
+    paragraphs = pdf_text.split('\n\n')
+    chunks = []
+
+    current_chunk = ''
+
+    for paragraph in paragraphs:
+        if len(current_chunk) + len(paragraph) > max_chunk_size and current_chunk:
+            chunks.append(current_chunk.strip())
+        else:
+            current_chunk = paragraph
+    
+    if current_chunk:
+        chunks.append(current_chunk.strip())
+
+    return chunks
 
 def uploadToChroma(collection: Collection, embedding_args: str, pdf_text: str, doc):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=embedding_args['chunk_size'], chunk_overlap=embedding_args['chunk_overlap'])
-    chunks = text_splitter.split_text(pdf_text)
+    #chunks = text_splitter.split_text(pdf_text)
+    chunks = createChunks(pdf_text, embedding_args['chunk_size'])
 
     # get embeddings
     metadatas = [
@@ -85,5 +110,5 @@ def uploadToChroma(collection: Collection, embedding_args: str, pdf_text: str, d
         documents=chunks,
     )
     
-    print(f'Uploaded {doc["document_id"]} to ChromaDB')
+    print(f'Uploaded {doc["source_url"]} to ChromaDB')
     return
