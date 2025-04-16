@@ -1,84 +1,41 @@
-import React, { useEffect, useRef, useState } from "react";
-import { getDocument, PDFDocumentProxy } from "pdfjs-dist";
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
-const PdfViewer: React.FC = () => {
-  const [pdf, setPdf] = useState<PDFDocumentProxy | null>(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [numPages, setNumPages] = useState(0);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+import { useNavigate } from 'react-router-dom';
 
-  const pdfPath = "/Hw2.pdf"; // should be in public folder
-
-  useEffect(() => {
-    const loadPdf = async () => {
-      const loadingTask = getDocument(pdfPath);
-      const doc = await loadingTask.promise;
-      setPdf(doc);
-      setNumPages(doc.numPages);
-    };
-
-    loadPdf();
-  }, []);
-
-    useEffect(() => {
-        let renderTask: any; // Allows us to refresh the page (without it we get a canvas render error)
-        const renderPage = async () => {
-        if (!pdf) return;
-    
-        const page = await pdf.getPage(pageNumber);
-        const viewport = page.getViewport({ scale: 1.5 });
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-    
-        const context = canvas.getContext("2d");
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-    
-        const renderContext = {
-            canvasContext: context!,
-            viewport,
-        };
-    
-        renderTask = page.render(renderContext);
-        try {
-            await renderTask.promise;
-        } catch (error) {
-            if (error?.name !== "RenderingCancelledException") {
-            console.error("Render failed:", error);
-            }
-        }
-        };
-    
-        renderPage();
-    
-        return () => {
-        if (renderTask) {
-            renderTask.cancel();
-        }
-        };
-    }, [pdf, pageNumber]);
-  
-
-  const goToPrevPage = () => setPageNumber((prev) => Math.max(prev - 1, 1));
-  const goToNextPage = () => setPageNumber((prev) => Math.min(prev + 1, numPages));
+const PdfViewer = () => {
+  const navigate = useNavigate();
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">PDF Viewer</h1>
-
-      <div className="mb-4 flex items-center gap-4">
-        <button onClick={goToPrevPage} disabled={pageNumber === 1} className="px-3 py-1 bg-gray-200 rounded">
-          Previous
-        </button>
-        <span>
-          Page {pageNumber} of {numPages}
-        </span>
-        <button onClick={goToNextPage} disabled={pageNumber === numPages} className="px-3 py-1 bg-gray-200 rounded">
-          Next
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Back Button */}
+      <div style={{ padding: '10px' }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            padding: '8px 12px',
+            backgroundColor: '#f0f0f0',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
+          ← Back to Chat
         </button>
       </div>
 
-      <canvas ref={canvasRef} className="border shadow rounded" />
+      {/* PDF Viewer */}
+      <div style={{ flex: 1, height: 0 }}>
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+          <Viewer
+            fileUrl="/Hw2.pdf"
+            plugins={[defaultLayoutPluginInstance]}
+          />
+        </Worker>
+      </div>
     </div>
   );
 };
