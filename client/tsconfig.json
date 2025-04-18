@@ -5,6 +5,8 @@
       "esModuleInterop": true,
       "jsx": "react-jsx",
       "baseUrl": "./src",
+      "target": "ES2015",
+      "lib": ["DOM", "ES2015"],
       "paths": {
         "*": ["*"]
       }

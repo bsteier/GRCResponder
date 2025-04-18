@@ -6,9 +6,12 @@ interface SidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
   newChat: () => void;
+  loadMessages: (conversationId: string) => void;
+  conversationHistory: Array<{ id: string; title: string; timestamp: string }>;
+  activeConversationId: string | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, newChat }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, newChat, loadMessages, conversationHistory, activeConversationId}) => {
   return (
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
@@ -18,15 +21,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, newChat }) => 
         <div className={`sidebar-content ${isOpen ? "" : "hidden"}`}>
           <div className='past-chats'>
             <span className='time-title'>Recent</span>
-            <span className='chat-title'>Inventory Mangement Question</span>
-            <br></br>
-            <span className='time-title'>February</span>
-            <span className='chat-title'>sed do eiusmod</span>
-            <br></br>
-            <span className='time-title'>January</span>
-            <span className='chat-title'>dolor sit amet</span>
-            <span className='chat-title'>consectetur adipiscing elit</span>
-            <span className='chat-title'>tempor incididunt ut</span>
+            {conversationHistory.map(convo => (
+              <div key={convo.id} onClick={() => loadMessages(convo.id)} className={`chat-title ${activeConversationId === convo.id ? 'active' : ''}`}>
+                <span className='chat-title'>{convo.title}</span>
+                <span className='chat-time'>{new Date(convo.timestamp).toLocaleDateString()}</span>
+              </div>
+            ))}
           </div>
         </div>
     </div>

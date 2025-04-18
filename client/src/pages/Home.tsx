@@ -1,64 +1,165 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
 import Sidebar from '../components/Sidebar';
 import MessageBox from '../components/MessageBox';
 import PdfViewer from '../components/PDFViewer';
 
+const USER_ID = '15';
+
 
 function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [messages, setMessages] = useState([]); // Array of messages
+  const [messages, setMessages] = useState([]); 
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [conversationHistory, setConversationHistory] = useState([]);
+
+  useEffect(() => {
+    fetchConversations();
+  }, []);
+
+  const fetchConversations = async () => {
+    try {
+      const res = await fetch(`/conversations?user_id=${USER_ID}`);
+      if (!res.ok) throw new Error("Failed to fetch conversations");
+
+      const data = await res.json();
+      setConversationHistory(data);
+    } catch (err) {
+      console.error("Error loading conversation history:", err);
+    }
+  };
+
+
+  const loadMessages = async (convoId: string) => {
+    try {
+      const res = await fetch(`/conversations/${convoId}/messages`);
+      if (!res.ok) throw new Error("Failed to fetch messages");
+  
+      const data = await res.json();
+      console.log(data);
+  
+      const formattedMessages = data.map(msg => ({
+        text: msg.message,
+        isUser: msg.sender === 'user',
+        files: msg.files || []
+      }))
+        .reverse();
+  
+      setConversationId(convoId);
+      setMessages(formattedMessages);
+    } catch (err) {
+      console.error("Error loading messages:", err);
+    }
+  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
     console.log(isSidebarOpen ? "OPEN" : "CLOSE");
+
+    if (!isSidebarOpen) {
+      fetchConversations();
+    }
   };
 
-  const createNewChat = () => {
-    setMessages([]);
-  }
+  const createNewChat = async () => {
+    try {
+      const res = await fetch('/conversations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: USER_ID,
+          timestamp: new Date().toISOString(),
+          title: "New Chat"
+        })
+      });
+  
+      if (!res.ok) throw new Error("Failed to create conversation");
+  
+      const data = await res.json();
+      setConversationId(data.id);
+      setMessages([]);
+      fetchConversations();
+      return data.id;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  };
+  
 
   const handleQueryChange = (e) => {
     setQuery(e.target.value);
   }
 
-  const handleSendMessage = () => {
-    if (query.trim() !== '') {
-      setMessages([{ text: query, isUser: true }, ...messages]); 
-      setQuery('');
+  const handleSendMessage = async () => {
+    if (!query.trim()) return;
+
+    setMessages([{ text: query, isUser: true }, ...messages]);
+    let id = conversationId;
+    if (!id) {
+      id = await createNewChat();
+      if (!id) return;
+      setConversationId(id);
     }
 
-      // Simulate AI response with a 0.5-second delay
-      setTimeout(() => {
-        const aiMessage = { text: "AI isn't implemented yet.", isUser: false };
-        setMessages(prevMessages => [aiMessage, ...prevMessages]);
-      }, 500); // 500 milliseconds = 0.5 seconds
+    try {
+      await fetch(`/conversations/${conversationId}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sender: "user",
+          message: query,
+          timestamp: new Date().toISOString()
+        })
+      });
+    } catch (err) {
+      console.error("Error saving user message:", err);
+    }
+
+    setQuery('');
+
+    setTimeout(async () => {
+      const aiMessage = { text: "AI isn't implemented yet.", files: ['/Hw2.pdf'], isUser: false };
+      setMessages(prevMessages => [aiMessage, ...prevMessages]);
+
+      try {
+        await fetch(`/conversations/${conversationId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sender: "ai",
+            message: aiMessage.text,
+            files: aiMessage.files,
+            timestamp: new Date().toISOString()
+          })
+        });
+      } catch (err) {
+        console.error("Error saving AI message:", err);
+      }
+    }, 500);
   };
+  
 
   return (
     <div className="Home">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} newChat={createNewChat}/>
+      <Sidebar
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        newChat={createNewChat}
+        loadMessages={loadMessages}
+        conversationHistory={conversationHistory}
+        activeConversationId={conversationId}
+      />
       <div className="Home-content">
         <div className="chat-content">
-          {/* <MessageBox files={[]}></MessageBox>
           {messages.map((message, index) => (
-            <MessageBox key={index} isUserMessage={message.isUser}>
+            <MessageBox key={index} isUserMessage={message.isUser} files={message.files}>
               {message.text}
             </MessageBox>
-          ))} */}
-          <MessageBox isUserMessage={false} files={["/Hw2.pdf"]}>
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Proin mus vulputate viverra vulputate feugiat ex placerat quam.
-
-Et tempus libero a ut sagittis in vehicula
-Nam ultrices semper natoque fames senectus rhoncus:
-
-Neque dolor a fames sollicitudin vivamus mattis magna pharetra. Bibendum lectus per lacinia natoque, at cursus nam morbi. Sed at dis non primis lectus hac arcu platea laoreet sagittis praesent fringilla.
-Nascetur per fames mattis inceptos bibendum natoque phasellus metus porttitor. Enim scelerisque vestibulum augue; porttitor metus conubia eleifend inceptos. 
-Natoque dui sociosqu, libero ullamcorper inceptos tellus eros cras. 
-
-Facilisi proin sed ultrices taciti fermentum in aliquet nulla class. Nulla varius semper nascetur sociosqu ut. Velit nulla semper semper proin massa porttitor leo.
-          </MessageBox>
+          ))}
         </div>
         <input
           type="text"

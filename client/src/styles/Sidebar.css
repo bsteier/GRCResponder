@@ -64,3 +64,20 @@
     opacity: 0;
     transition: opacity 0.2s ease-out;
 }
+.chat-title {
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+  }
+  
+  .chat-title:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .chat-title.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+  }
+  
