@@ -20,7 +20,7 @@ function Home() {
 
   const fetchConversations = async () => {
     try {
-      const res = await fetch(`/conversations?user_id=${USER_ID}`);
+      const res = await fetch(`http://localhost:8000/conversations?user_id=${USER_ID}`);
       if (!res.ok) throw new Error("Failed to fetch conversations");
 
       const data = await res.json();
@@ -33,7 +33,7 @@ function Home() {
 
   const loadMessages = async (convoId: string) => {
     try {
-      const res = await fetch(`/conversations/${convoId}/messages`);
+      const res = await fetch(`http://localhost:8000/conversations/${convoId}/messages`);
       if (!res.ok) throw new Error("Failed to fetch messages");
   
       const data = await res.json();
@@ -64,7 +64,7 @@ function Home() {
 
   const createNewChat = async () => {
     try {
-      const res = await fetch('/conversations', {
+      const res = await fetch('http://localhost:8000/conversations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -106,7 +106,8 @@ function Home() {
     }
 
     try {
-      await fetch(`/conversations/${conversationId}/messages`, {
+
+      await fetch(`http://localhost:8000/conversations/${conversationId}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -126,7 +127,8 @@ function Home() {
       setMessages(prevMessages => [aiMessage, ...prevMessages]);
 
       try {
-        await fetch(`/conversations/${conversationId}/messages`, {
+        console.log("POSTING MESSAGES");
+        await fetch(`http://localhost:8000/conversations/${conversationId}/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
