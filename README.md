@@ -9,3 +9,8 @@ Follow these steps to run the code:
 2. Run `npm install`.
 3. Navigate to the `server` directory.
 4. Run `pip install`.
+5. Run `uvicorn main:app --reload`.
+
+## Setting up local database
+1. Navigate to `server` directory.
+2. Run `python models.py`.

@@ -1,0 +1,83 @@
+.sidebar {
+    background-color: #1A1A1A;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    border-right: 1.5px solid #1FB6CE;
+    width: 74px; /* Width to fit the icon */
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.sidebar.open {
+    width: 235px;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.sidebar-icon {
+    color: #D9D9D9;
+    padding: 25px;
+    font-size: 24px;
+    position: relative;
+}
+
+.sidebar-icon:hover {
+    background-color: #3c3c3cc3 ;
+}
+
+.sidebar-content {
+    opacity: 1;
+    overflow-y: scroll;
+    transition-delay: 0.2s;
+    transition: opacity 0.4s ease-in;
+}
+
+.past-chats {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-left: 10px;
+}
+.time-title {
+    color: #EDEDED;
+    font-weight: bold;
+    font-size: 14.5px;
+    margin: 10px;
+}
+.chat-title {
+    color: #6E6C6C;
+    font-size: 14px;
+    margin: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.hidden {
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+}
+.chat-title {
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+  }
+  
+  .chat-title:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .chat-title.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+  }
+  
