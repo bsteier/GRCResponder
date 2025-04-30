@@ -21,3 +21,7 @@ yarn-debug.log*
 yarn-error.log*
 
 venv
+
+test_db
+
+__pycache__/
