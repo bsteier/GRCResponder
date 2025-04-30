@@ -6,6 +6,7 @@ from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 from models import Conversation, Message, SessionLocal
 from schemas import ConversationCreate, MessageCreate, ConversationResponse, MessageResponse
+from rag_pipeline import graph 
 
 app = FastAPI()
 # Allow all origins for development purposes
@@ -45,7 +46,7 @@ def create_conversation(conversation: ConversationCreate, db: Session = Depends(
         db.rollback()  # Rollback the transaction in case of error
         raise HTTPException(status_code=500, detail=f"Error creating conversation: {str(e)}")
 
-# Post a message to a conversation
+# Post a message to a conversation and llm
 @app.post("/conversations/{conversation_id}/messages", response_model=MessageResponse)
 def add_message(conversation_id: str, message: MessageCreate, db: Session = Depends(get_db)):
     db_conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
@@ -63,7 +64,28 @@ def add_message(conversation_id: str, message: MessageCreate, db: Session = Depe
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
-    return db_message
+
+    # Run graph 
+    result = graph.invoke({"messages": [message]})
+    ai_response = None
+
+    # Save response
+    for msg in reversed(result["messages"]):
+        print(msg)
+
+        if msg.sender == 'ai':
+            ai_msg = Message(
+                id=str(uuid.uuid4()),
+                conversation_id=conversation_id,
+                sender="ai",
+                message=ai_response.content,
+                timestamp=msg.timestamp,  # Use current time for response
+            )
+            db.add(ai_msg)
+            db.commit()
+            return {"response": ai_response.content}
+    raise HTTPException(status_code=500, detail="No AI response generated.")
+
 
 # Get conversations
 @app.get("/conversations", response_model=List[ConversationResponse])
