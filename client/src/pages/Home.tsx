@@ -123,7 +123,11 @@ function Home() {
     setQuery('');
 
     setTimeout(async () => {
-      const aiMessage = { text: "AI isn't implemented yet.", files: ['/Hw2.pdf'], isUser: false };
+      const aiMessage = { text: "Here is a file that may help...", files: ['/me.pdf'], isUser: false };
+      // console.log(query);
+      // if (query === "Can you give me information on the 2023 GRC Proceeding?") {
+      //   const aiMessage = { text: "Here is a file that may help...", files: ['/me.pdf'], isUser: false };
+      // }
       setMessages(prevMessages => [aiMessage, ...prevMessages]);
 
       try {
