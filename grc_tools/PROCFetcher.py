@@ -7,8 +7,9 @@ import json
 import os
 import re
 import time
+import html
 
-TIMEOUT = 500
+TIMEOUT = 300
 
 class PROCFetcher:
     DOMAIN_PATH = 'https://apps.cpuc.ca.gov/apex/'
@@ -119,7 +120,6 @@ class PROCFetcher:
         page_header = soup.find('h1')
         proceeding_id_elem = page_header.get_text().split(' ')[0]
         proceeding_id = str(proceeding_id_elem) if proceeding_id_elem else None
-        filed_by = self.getDataText(soup, 'P56_FILED_BY')
 
         service_lists = soup.find_all('span', id='P56_SERVICE_LISTS')
         service_list = []
@@ -137,6 +137,14 @@ class PROCFetcher:
         category = self.getDataText(soup, 'P56_CATEGORY')
         description = self.getDataText(soup, 'P56_DESCRIPTION')
 
+        #filed_by = self.getDataText(soup, 'P56_FILED_BY')
+
+        filed_html = soup.find('span', id='P56_FILED_BY')
+        filed_text = filed_html.decode_contents() if filed_html else None
+        filed_text = html.unescape(filed_text) if filed_text else None
+        filed_arr = re.split(r'<br\s*/?>', filed_text) if filed_text else None
+        clean_filed = [str(member.replace('</br>', '').strip()) for member in filed_arr] if filed_arr else None
+
         # Find all the 'span' elements with id='P56_STAFF'
         staff_html = soup.find('span', id='P56_STAFF')
         
@@ -146,7 +154,7 @@ class PROCFetcher:
 
         metadata = {
             'proceeding_id': proceeding_id,
-            'filed_by': filed_by,
+            'filed_by': clean_filed,
             'service_list': service_list,
             'industry': industry,
             'filing_date': filing_date,

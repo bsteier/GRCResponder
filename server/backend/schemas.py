@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 
 # add a conversation to db
 class ConversationCreate(BaseModel):
@@ -13,7 +13,6 @@ class MessageCreate(BaseModel):
     sender: str 
     message: str
     timestamp: datetime
-    files: Optional[List[str]] = []
 
 # retrieve a conversation
 class ConversationResponse(BaseModel):
@@ -29,4 +28,3 @@ class MessageResponse(BaseModel):
     sender: str
     message: str
     timestamp: datetime
-    files: Optional[List[str]] = []

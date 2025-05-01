@@ -1,22 +1,11 @@
 from sqlalchemy import create_engine, Column, String, Text, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
+# Database connection URL
+DATABASE_URL = "postgresql://adminuser:password@localhost/accenture"
 
-# POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-# POSTGRES_PORT = os.getenv("POSTGRES_PORT")
-# POSTGRES_DB = os.getenv("POSTGRES_DB")
-# POSTGRES_USER = os.getenv("POSTGRES_USER")
-# POSTGRES_PASS = os.getenv("POSTGRES_PASS")
-
-# temp
-POSTGRES_URL = "postgresql+psycopg2://postgres:password@localhost:5432/grc"
-print("Using DB URL:", POSTGRES_URL)
-
-engine = create_engine(POSTGRES_URL)
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -41,7 +30,9 @@ class Message(Base):
     sender = Column(String)
     message = Column(Text)
     timestamp = Column(DateTime)
-    files = Column(Text, nullable=True) 
 
     # Relationship to conversation
     conversation = relationship("Conversation", back_populates="messages")
+
+
+Base.metadata.create_all(bind=engine)
