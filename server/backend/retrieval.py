@@ -36,4 +36,5 @@ def retrieve_context(query: str):
         for doc in retrieved_docs
     )
 
+
     return serialized, retrieved_docs

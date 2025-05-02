@@ -108,12 +108,30 @@ class PROCFetcher:
             return proceedings
 
 
+    # This will return the metadata for a single proceeding given its ID, useful
+    # to use while creating databases for testing to make the second ChromaDB w/
+    # proceeding descriptions
+    def fetchSingleProceeding(self, proceeding_id):
+        if not self.session:
+            self.startSession()
+        formatted_string = ''.join(c for c in proceeding_id if c.isalnum())
+        proceeding_link = f"{self.DOMAIN_PATH}f?p=401:5::::RP,5,RIR,57,RIR:::{formatted_string}"
+
+        proceeding_info = self.retrieveProceeding(proceeding_link)
+        
+        return proceeding_info
+
+
+
     def retrieveProceeding(self, link):
         # use requests
+        if not self.session:
+            self.startSession()
+        
         page = self.session.get(link)
         if page.status_code != 200:
             print(f"Error fetching {link}: {page.status_code}")
-            return None
+            raise Exception(f"Error fetching {link}: {page.status_code}")
         
         soup = BeautifulSoup(page.text, 'html.parser')
         # find the link to the document
@@ -200,7 +218,7 @@ def addProceedings(proceeding_links, filename):
     proceedings = []
     for link in proceeding_links:
         # wait to be polite
-        time.sleep(0.5)
+        time.sleep(0.2)
         try:
             proceedings.append(fetcher.retrieveProceeding(link))
         except Exception as e:

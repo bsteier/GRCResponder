@@ -106,8 +106,8 @@ function Home() {
     }
 
     try {
-
-      await fetch(`http://localhost:8000/conversations/${conversationId}/messages`, {
+      setQuery('');
+      const resp = await fetch(`http://localhost:8000/conversations/${conversationId}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -116,37 +116,20 @@ function Home() {
           timestamp: new Date().toISOString()
         })
       });
+      
+      // Get AI Message Response
+      const data = await resp.json();
+      console.log(data);
+      const aiMessage = { text: data['data']['message'], files: ['/me.pdf'], isUser: false };
+      console.log(aiMessage);
+      setMessages(prevMessages => [aiMessage, ...prevMessages]);
+      
+
     } catch (err) {
       console.error("Error saving user message:", err);
     }
-
-    setQuery('');
-
-    setTimeout(async () => {
-      const aiMessage = { text: "Here is a file that may help...", files: ['/me.pdf'], isUser: false };
-      // console.log(query);
-      // if (query === "Can you give me information on the 2023 GRC Proceeding?") {
-      //   const aiMessage = { text: "Here is a file that may help...", files: ['/me.pdf'], isUser: false };
-      // }
-      setMessages(prevMessages => [aiMessage, ...prevMessages]);
-
-      try {
-        console.log("POSTING MESSAGES");
-        await fetch(`http://localhost:8000/conversations/${conversationId}/messages`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sender: "ai",
-            message: aiMessage.text,
-            files: aiMessage.files,
-            timestamp: new Date().toISOString()
-          })
-        });
-      } catch (err) {
-        console.error("Error saving AI message:", err);
-      }
-    }, 500);
   };
+
   
 
   return (

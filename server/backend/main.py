@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from models import Conversation, Message, SessionLocal
 from schemas import ConversationCreate, MessageCreate, ConversationResponse, MessageResponse
-
+from fastapi.responses import JSONResponse
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from llm import getAIResponse
 
@@ -65,7 +65,18 @@ def add_message(conversation_id: str, message: MessageCreate, db: Session = Depe
     )
     db.add(db_message)
     db.commit()
-    db.refresh(db_message)
+
+    ai_msg = processUserQuery(message.message, conversation_id, db)
+
+    db.add(ai_msg)
+    db.commit()
+    db.refresh(db_message) 
+    return JSONResponse(content={
+        "response": "Message saved successfully",
+        "data": {
+            "message": ai_msg.message
+        }
+    }, status_code=200)
 
 
     # Run graph == This is the only connection to the AI that there should be
@@ -112,7 +123,7 @@ def processUserQuery(query: str, conversation_id: str, db: Session = Depends(get
     )  # Use current time for response
 
     # add the message to the DB
-    add_message(conversation_id, ai_msg, db)
+    # add_message(conversation_id, ai_msg, db)
     return ai_msg
 
 

@@ -23,3 +23,6 @@ yarn-error.log*
 venv
 
 test_db
+
+# Ignore python cache files
+__pycache__/
