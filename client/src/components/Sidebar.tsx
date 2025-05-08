@@ -1,6 +1,8 @@
 import React from "react";
 import '../styles/Sidebar.css'
-import {MenuOutlined, EditOutlined} from "@ant-design/icons";
+import { MenuOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
+import { Dropdown, Menu } from "antd";
+import { useState } from "react";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,9 +11,37 @@ interface SidebarProps {
   loadMessages: (conversationId: string) => void;
   conversationHistory: Array<{ id: string; title: string; timestamp: string }>;
   activeConversationId: string | null;
+  onRenameConversation: (id: string, newTitle: string) => void;
+  onDeleteConversation: (id: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, newChat, loadMessages, conversationHistory, activeConversationId}) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, newChat, loadMessages, conversationHistory, activeConversationId, onRenameConversation, onDeleteConversation }) => {
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  const getMenuItems = (id: string, title: string) => ({
+    items: [
+      {
+        key: 'rename',
+        label: 'Rename',
+        onClick: () => {
+          const newTitle = prompt('Rename conversation:', title);
+          if (newTitle && newTitle.trim() !== '') {
+            onRenameConversation(id, newTitle.trim());
+          }
+        }
+      },
+      {
+        key: 'delete',
+        label: 'Delete',
+        onClick: () => {
+          if (confirm(`Are you sure you want to delete "${title}"?`)) {
+            onDeleteConversation(id);
+          }
+        }
+      }
+    ]
+  });
+
   return (
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
@@ -22,9 +52,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, newChat, loadM
           <div className='past-chats'>
             <span className='time-title'>Recent</span>
             {conversationHistory.map(convo => (
-              <div key={convo.id} onClick={() => loadMessages(convo.id)} className={`chat-title ${activeConversationId === convo.id ? 'active' : ''}`}>
-                <span className='chat-title'>{convo.title}</span>
+              <div
+                key={convo.id}
+                className={`chat-title ${activeConversationId === convo.id ? 'active' : ''}`}
+                onMouseEnter={() => setHoveredId(convo.id)}
+                onMouseLeave={() => setHoveredId(null)}
+              >
+                <span onClick={() => loadMessages(convo.id)}>{convo.title}</span>
                 <span className='chat-time'>{new Date(convo.timestamp).toLocaleDateString()}</span>
+
+                {hoveredId === convo.id && (
+                  <Dropdown menu={getMenuItems(convo.id, convo.title)} trigger={['click']}>
+                    <MoreOutlined className="more-icon" />
+                  </Dropdown>
+                )}
               </div>
             ))}
           </div>

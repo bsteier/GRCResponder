@@ -81,3 +81,24 @@
     font-weight: bold;
   }
   
+
+  .chat-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 6px;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .chat-title:hover {
+    background-color: #f2f2f2;
+  }
+  
+  .more-icon {
+    font-size: 16px;
+    color: gray;
+    cursor: pointer;
+    margin-left: 8px;
+  }

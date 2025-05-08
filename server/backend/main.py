@@ -84,3 +84,14 @@ def get_conversation_messages(conversation_id: str, db: Session = Depends(get_db
     messages = db.query(Message).filter(Message.conversation_id == conversation_id).all()
     return messages
 
+@app.delete("/conversations/{conversation_id}", response_model=dict)
+def delete_conversation(conversation_id: str, db: Session = Depends(get_db)):
+    convo = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+    
+    if not convo:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    
+    db.delete(convo)
+    db.commit()
+
+    return {"detail": "Conversation deleted"}

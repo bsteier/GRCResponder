@@ -3,6 +3,8 @@ import '../styles/App.css';
 import Sidebar from '../components/Sidebar';
 import MessageBox from '../components/MessageBox';
 import PdfViewer from '../components/PDFViewer';
+import { MoreOutlined } from '@ant-design/icons';
+import { Dropdown, Menu } from 'antd';
 
 const USER_ID = '15';
 
@@ -29,7 +31,6 @@ function Home() {
       console.error("Error loading conversation history:", err);
     }
   };
-
 
   const loadMessages = async (convoId: string) => {
     try {
@@ -143,6 +144,36 @@ function Home() {
       }
     }, 500);
   };
+
+  const handleRenameConversation = async (id: string, newTitle: string) => {
+    try {
+      await fetch(`/conversations/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title: newTitle })
+      });
+      fetchConversations();
+    } catch (err) {
+      console.error("Error renaming conversation:", err);
+    }
+  };
+  
+  const handleDeleteConversation = async (id: string) => {
+    try {
+      await fetch(`/conversations/${id}`, {
+        method: 'DELETE'
+      });
+      fetchConversations();
+      if (id === conversationId) {
+        setConversationId(null);
+        setMessages([]);
+      }
+    } catch (err) {
+      console.error("Error deleting conversation:", err);
+    }
+  };
   
 
   return (
@@ -154,6 +185,8 @@ function Home() {
         loadMessages={loadMessages}
         conversationHistory={conversationHistory}
         activeConversationId={conversationId}
+        onRenameConversation={handleRenameConversation}
+        onDeleteConversation={handleDeleteConversation}
       />
       <div className="Home-content">
         <div className="chat-content">
