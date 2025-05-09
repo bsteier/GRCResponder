@@ -162,7 +162,7 @@ function Home() {
   
   const handleDeleteConversation = async (id: string) => {
     try {
-      await fetch(`/conversations/${id}`, {
+      await fetch(`http://localhost:8000/conversations/${id}`, {
         method: 'DELETE'
       });
       fetchConversations();

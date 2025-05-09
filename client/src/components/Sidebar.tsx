@@ -34,7 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, newChat, loadM
         key: 'delete',
         label: 'Delete',
         onClick: () => {
-          if (confirm(`Are you sure you want to delete "${title}"?`)) {
+          if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
             onDeleteConversation(id);
           }
         }
