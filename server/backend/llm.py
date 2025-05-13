@@ -20,7 +20,8 @@ from dotenv import load_dotenv
 import os
 
 # load in environment variables
-load_dotenv()
+env_path = "../../.env"
+load_dotenv(dotenv_path=env_path)
 GOOGLE_API = os.getenv("GOOGLE_API_KEY")
 chroma_path = os.getenv("CHROMA_PATH", "./test_db")
 collection_name = os.getenv("DOCUMENT_COLLECTION", 'test_collection')
