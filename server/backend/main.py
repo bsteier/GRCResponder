@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from models import Conversation, Message, SessionLocal
-from schemas import ConversationCreate, MessageCreate, ConversationResponse, MessageResponse
+from schemas import ConversationCreate, MessageCreate, ConversationResponse, MessageResponse, TitleUpdate
 from fastapi.responses import JSONResponse
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from llm import getAIResponse
@@ -141,3 +141,28 @@ def get_conversation_messages(conversation_id: str, db: Session = Depends(get_db
     messages = db.query(Message).filter(Message.conversation_id == conversation_id).all()
     return messages
 
+# Delete conversation
+@app.delete("/conversations/{conversation_id}", response_model=dict)
+def delete_conversation(conversation_id: str, db: Session = Depends(get_db)):
+    convo = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+    
+    if not convo:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    
+    db.delete(convo)
+    db.commit()
+
+    return {"detail": "Conversation deleted"}
+
+# Update conversation Name
+@app.put("/conversations/{conversation_id}", response_model=dict)
+def update_conversation_name(conversation_id: str, payload: TitleUpdate, db: Session = Depends(get_db)):
+    convo = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+
+    if not convo:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    old_title = convo.title
+    convo.title = payload.new_title
+    db.commit()
+
+    return {"detail": f"Old title '{old_title}' changed to {payload.new_title}"}

@@ -34,5 +34,4 @@ class Message(Base):
     # Relationship to conversation
     conversation = relationship("Conversation", back_populates="messages")
 
-
 Base.metadata.create_all(bind=engine)
