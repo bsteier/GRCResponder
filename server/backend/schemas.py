@@ -28,3 +28,8 @@ class MessageResponse(BaseModel):
     sender: str
     message: str
     timestamp: datetime
+
+# Updating Title Model
+class TitleUpdate(BaseModel):
+    new_title: str
+    

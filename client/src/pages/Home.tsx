@@ -130,6 +130,36 @@ function Home() {
     }
   };
 
+  const handleRenameConversation = async (id: string, newTitle: string) => {
+    try {
+      await fetch(`http://localhost:8000/conversations/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ new_title: newTitle })
+      });
+      fetchConversations();
+    } catch (err) {
+      console.error("Error renaming conversation:", err);
+    }
+  };
+
+  const handleDeleteConversation = async (id: string) => {
+    try {
+      await fetch(`http://localhost:8000/conversations/${id}`, {
+        method: 'DELETE'
+      });
+      fetchConversations();
+      if (id === conversationId) {
+        setConversationId(null);
+        setMessages([]);
+      }
+    } catch (err) {
+      console.error("Error deleting conversation:", err);
+    }
+  };
+
   
 
   return (
@@ -141,6 +171,8 @@ function Home() {
         loadMessages={loadMessages}
         conversationHistory={conversationHistory}
         activeConversationId={conversationId}
+        onRenameConversation={handleRenameConversation}
+        onDeleteConversation={handleDeleteConversation}
       />
       <div className="Home-content">
         <div className="chat-content">
