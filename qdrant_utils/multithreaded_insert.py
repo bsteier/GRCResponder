@@ -18,7 +18,7 @@ import time #for monitoring
 
 load_dotenv()
 QDRANT_CONNECT = os.getenv('QDRANT_CONNECT')
-qdrant_client = QdrantClient(url='QDRANT_CONNECT')
+qdrant_client = QdrantClient(url=QDRANT_CONNECT)
 
 LOCAL_PATH = '/workspace/CPUCDocuments/' # Replace to directory with all proceeding folders
 BATCH_SIZE = 256
