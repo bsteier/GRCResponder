@@ -5,6 +5,7 @@ client/.pnp
 
 # testing
 client/coverage
+testing
 
 # production
 client/build
@@ -26,3 +27,5 @@ test_db
 
 # Ignore python cache files
 __pycache__/
+
+.env
