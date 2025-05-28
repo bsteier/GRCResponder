@@ -9,6 +9,7 @@ from schemas import ConversationCreate, MessageCreate, ConversationResponse, Mes
 from fastapi.responses import JSONResponse
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from llm import getAIResponse
+import logging
 
 app = FastAPI()
 # Allow all origins for development purposes
@@ -102,29 +103,41 @@ def add_message(conversation_id: str, message: MessageCreate, db: Session = Depe
 
 
 # ====== Function that will take the query from the user and return the AI response ======
-def processUserQuery(query: str, conversation_id: str, db: Session = Depends(get_db)) -> str:
+def processUserQuery(query: str, conversation_id: str, db: Session = Depends(get_db)) -> Message:
     # Run graph == This is the only connection to the AI that there should be
     # It just passed the query to the AI and should receive a response
-    response = getAIResponse(query)
+    try:
+        response = getAIResponse(query)
 
-    # Just using this for now to show that AI gets a response
-    print("AI Response:", response)
+        # Just using this for now to show that AI gets a response
+        print("AI Response:", response)
+        
+        # Save response
+        ai_msg = Message(
+            id=str(uuid.uuid4()),
+            conversation_id=conversation_id,
+            sender="ai",
+            message=response["content"],
+            # I am not sure what this needs to be set to, but I am just getting
+            # current time, FIX IF NOT CORRECT, IT is defaulting to UTC time
+            # because I am trying to mimic the typescript Date.toISOString() method
+            timestamp= datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+        )  # Use current time for response
 
-    # Save response
-    ai_msg = Message(
-    id=str(uuid.uuid4()),
-    conversation_id=conversation_id,
-    sender="ai",
-    message=response["content"],
-    # I am not sure what this needs to be set to, but I am just getting
-    # current time, FIX IF NOT CORRECT, IT is defaulting to UTC time
-    # because I am trying to mimic the typescript Date.toISOString() method
-    timestamp= datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
-    )  # Use current time for response
-
-    # add the message to the DB
-    # add_message(conversation_id, ai_msg, db)
-    return ai_msg
+        # add the message to the DB
+        # add_message(conversation_id, ai_msg, db)
+        return ai_msg
+    except Exception as e:
+        logging.error(f"Error processing user query: {str(e)}")
+        # Return error message as AI response
+        error_msg = Message(
+            id=str(uuid.uuid4()),
+            conversation_id=conversation_id,
+            sender="ai",
+            message="I apologize, but I encountered an error processing your request. Please try again.",
+            timestamp=datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+        )
+        return error_msg
 
 
 
