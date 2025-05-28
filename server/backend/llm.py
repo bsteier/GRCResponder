@@ -24,7 +24,8 @@ from retrieval import retrieve, set_collection
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 # load in environment variables
-load_dotenv()
+env_path = "../../.env"
+load_dotenv(dotenv_path=env_path)
 QDRANT_CONNECT = os.getenv("QDRANT_CONNECT")
 COLLECTION_NAME = os.getenv("DOCUMENT_COLLECTION")
 GOOGLE_API = os.getenv("GOOGLE_API_KEY")
