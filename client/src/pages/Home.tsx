@@ -3,6 +3,7 @@ import '../styles/App.css';
 import Sidebar from '../components/Sidebar';
 import MessageBox from '../components/MessageBox';
 import PdfViewer from '../components/PDFViewer';
+import { marked } from 'marked';
 
 const USER_ID = '15';
 
@@ -120,7 +121,13 @@ function Home() {
       // Get AI Message Response
       const data = await resp.json();
       console.log(data);
-      const aiMessage = { text: data['data']['message'], files: ['/me.pdf'], isUser: false };
+
+      const formattedMessage = marked(data['data']['message'], {
+        breaks: true,
+        gfm: true
+      });
+
+      const aiMessage = { text: formattedMessage, files: ['/me.pdf'], isUser: false };
       console.log(aiMessage);
       setMessages(prevMessages => [aiMessage, ...prevMessages]);
       
