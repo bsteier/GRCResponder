@@ -41,7 +41,9 @@ function Home() {
       console.log(data);
   
       const formattedMessages = data.map(msg => ({
-        text: marked(msg.message, {
+        text: msg.sender === 'user'
+          ? msg.message
+          : marked(msg.message, {
           breaks: true,
           gfm: true
         }),
