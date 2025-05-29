@@ -14,7 +14,13 @@ interface MessageBoxProps {
 const MessageBox: React.FC<MessageBoxProps> = ({ children, isUserMessage, files }) => {
   return (
     <div className={`messagebox-container ${isUserMessage ? 'user-message' : 'bot-message'}`}>
-      <div dangerouslySetInnerHTML={{ __html: children as string }} /> {/*Forces ts to think this is a string*/}
+      {
+        isUserMessage ? (
+          <span>{children}</span> // Assuming children is a string for user messages
+        ) : (
+          <div dangerouslySetInnerHTML={{ __html: children as string }} />
+        )
+      }
         {files && (
           <div className="messagebox-files">
             {files.map((file, index) => (
