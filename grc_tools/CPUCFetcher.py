@@ -120,7 +120,7 @@ class CPUCFetcher:
             # Even though not a pdf url, we still check to see if the url has been seen
             if doc_link in seen_urls:
                 # print for debugging already seen documents
-
+                
                 # print(f"Document already seen: {doc_link}")
                 continue
             seen_urls.add(doc_link)
@@ -132,7 +132,7 @@ class CPUCFetcher:
     # iterates through the pdf documents page to get each document for processing
     def _saveDocs(self, doc_url: str, documents: list, seen_urls: set):
         # print statement for debugging
-        #print(f"Fetching documents from: {doc_url}")
+        print(f"Fetching documents from: {doc_url}")
 
         try:
             # Add wait time to be polite to the server so we do not get in trouble
