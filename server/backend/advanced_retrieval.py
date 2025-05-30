@@ -11,14 +11,17 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2', device=device)
 
 def query_db(query: str, qdrant_client: QdrantClient, collection_name: str, k: int=5):
-    query_embedding = embedding_model.encode(query).tolist()
+    try:
+        query_embedding = embedding_model.encode(query).tolist()
 
-    response = qdrant_client.query_points(
-        collection_name=collection_name,
-        query=query_embedding,
-        limit=k,
-        with_payload=True
-    )
+        response = qdrant_client.query_points(
+            collection_name=collection_name,
+            query=query_embedding,
+            limit=k,
+            with_payload=True
+        )
+    except Exception as e:
+        print("hi", e)
 
     return response.points
 
@@ -27,6 +30,7 @@ def query_db(query: str, qdrant_client: QdrantClient, collection_name: str, k: i
 CROSS_ENCODER_SAMPLE = 30
 def crossEncoderQuery(query: str, qdrant_client: QdrantClient, collection_name: str, k: int=5):
     # This will just return alot of points from the db prior to cross-encoder filtering
+    print("in cross encoder")
     points = query_db(
         query=query, 
         qdrant_client=qdrant_client,
@@ -45,6 +49,7 @@ def crossEncoderQuery(query: str, qdrant_client: QdrantClient, collection_name: 
     points = [point for point, _ in points[:k]]
     scores = [score for score in points[:k]] # we will not return scores for now, maybe for testing and weight manipulation
     
+    print("complete")
     return points
 
 

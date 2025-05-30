@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import os
 
 
-load_dotenv()
+load_dotenv(dotenv_path="../.env")
 QDRANT_CONNECT = os.getenv('QDRANT_CONNECT')
 if QDRANT_CONNECT is None:
     raise ValueError("QDRANT_CONNECT environment variable not set.")

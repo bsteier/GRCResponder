@@ -32,6 +32,11 @@ GOOGLE_API = os.getenv("GOOGLE_API_KEY")
 
 try:
     qdrant_client = QdrantClient(url=QDRANT_CONNECT)
+    collections = qdrant_client.get_collections()
+
+    print("Collections:r")
+    for collection in collections.collections:
+        print(f"- {collection.name}")
 except Exception as e:
     print(f"Error connecting to Qdrant: {e}")
 
