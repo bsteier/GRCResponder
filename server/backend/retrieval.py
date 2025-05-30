@@ -7,7 +7,7 @@ from advanced_retrieval import query_db, crossEncoderQuery, hydeRetrieval, hydeC
 
 import os
 from dotenv import load_dotenv
-load_dotenv(dotenv_path="/Users/bsteier/college/cs180/GRCResponder/.env")
+load_dotenv(dotenv_path="../../.env")
 
 K = 8
 print(f"DOCUMENT_COLLECTION: {os.getenv('DOCUMENT_COLLECTION')}")
