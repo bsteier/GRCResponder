@@ -5,8 +5,11 @@ from sentence_transformers import SentenceTransformer
 
 from advanced_retrieval import query_db, crossEncoderQuery, hydeRetrieval, hydeCrossEncoderRetrieval
 
+from qdrant_client.http.models import Filter
+
 import os
 from dotenv import load_dotenv
+
 load_dotenv(dotenv_path="../../.env")
 
 K = 8
@@ -23,7 +26,7 @@ def set_collection(client: QdrantClient):
     qdrant_client = client
 
 @tool(response_format="content_and_artifact")
-def retrieve(query: str, k: int = 8):
+def retrieve(query: str, k: int = 8, search_filter: Filter = None):
     """Retrieve information related to a query."""
     # Query qdrant directly
 
@@ -53,4 +56,5 @@ def retrieve(query: str, k: int = 8):
         )
     except Exception as e:
         print (e)
+
     return serialized, retrieved_docs

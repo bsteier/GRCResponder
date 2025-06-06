@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from llm import getAIResponse
 import logging
+from starlette.concurrency import run_in_threadpool
 
 app = FastAPI()
 # Allow all origins for development purposes
@@ -51,8 +52,10 @@ def create_conversation(conversation: ConversationCreate, db: Session = Depends(
 
 # Post a message to a conversation and llm
 @app.post("/conversations/{conversation_id}/messages", response_model=MessageResponse)
-def add_message(conversation_id: str, message: MessageCreate, db: Session = Depends(get_db)):
-    db_conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+async def add_message(conversation_id: str, message: MessageCreate, db: Session = Depends(get_db)):
+    db_conversation = await run_in_threadpool(
+        lambda: db.query(Conversation).filter(Conversation.id == conversation_id).first
+    ) 
     if not db_conversation:
         raise HTTPException(status_code=404, detail="Conversation not found")
     
@@ -64,14 +67,22 @@ def add_message(conversation_id: str, message: MessageCreate, db: Session = Depe
         message=message.message,
         timestamp=message.timestamp
     )
-    db.add(db_message)
-    db.commit()
+    
+    # db.add(db_message)
+    await run_in_threadpool(db.add, db_message)  # Commit the transaction in a thread-safe manner
+    #db.commit()
+    await run_in_threadpool(db.commit)
 
-    ai_msg = processUserQuery(message.message, conversation_id, db)
+    ai_msg = await processUserQuery(message.message, conversation_id, db)
 
-    db.add(ai_msg)
-    db.commit()
-    db.refresh(db_message) 
+    # db.add(ai_msg)
+    # db.commit()
+    # db.refresh(db_message) 
+
+    await run_in_threadpool(db.add, ai_msg)
+    await run_in_threadpool(db.commit)
+    await run_in_threadpool(db.refresh, db_message)
+
     return JSONResponse(content={
         "response": "Message saved successfully",
         "data": {
@@ -103,14 +114,13 @@ def add_message(conversation_id: str, message: MessageCreate, db: Session = Depe
 
 
 # ====== Function that will take the query from the user and return the AI response ======
-def processUserQuery(query: str, conversation_id: str, db: Session = Depends(get_db)) -> Message:
+async def processUserQuery(query: str, conversation_id: str, db: Session = Depends(get_db)) -> Message:
     # Run graph == This is the only connection to the AI that there should be
     # It just passed the query to the AI and should receive a response
     try:
-        response = getAIResponse(query)
-
+        response = await getAIResponse(query)
         # Just using this for now to show that AI gets a response
-        print("AI Response:", response)
+        # print("AI Response:", response)
         
         # Save response
         ai_msg = Message(
@@ -134,7 +144,7 @@ def processUserQuery(query: str, conversation_id: str, db: Session = Depends(get
             id=str(uuid.uuid4()),
             conversation_id=conversation_id,
             sender="ai",
-            message="I apologize, but I encountered an error processing your request. Please try again.",
+            message=f"I apologize, but I encountered an error processing your request. Please try again.",
             timestamp=datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
         )
         return error_msg
