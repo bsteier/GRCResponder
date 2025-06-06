@@ -19,7 +19,7 @@ def query_db(query: str, qdrant_client: QdrantClient, collection_name: str, k: i
         query=query_embedding,
         limit=k,
         with_payload=True,
-        #query_filter=search_filter
+        query_filter=search_filter
     )
 
     return response.points
