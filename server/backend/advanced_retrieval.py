@@ -1,5 +1,6 @@
 from sentence_transformers import CrossEncoder, SentenceTransformer
 from qdrant_client import QdrantClient
+from qdrant_client.http.models import Filter
 from langchain_google_genai import ChatGoogleGenerativeAI
 import torch
 
@@ -10,22 +11,23 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2', device=device)
 
-def query_db(query: str, qdrant_client: QdrantClient, collection_name: str, k: int=5):
+def query_db(query: str, qdrant_client: QdrantClient, collection_name: str, k: int=5, search_filter: Filter=None):
     query_embedding = embedding_model.encode(query).tolist()
 
     response = qdrant_client.query_points(
         collection_name=collection_name,
         query=query_embedding,
         limit=k,
-        with_payload=True
+        with_payload=True,
+        #query_filter=search_filter
     )
 
     return response.points
 
 
 # Number of samples to get before cross-encoder filtering
-CROSS_ENCODER_SAMPLE = 30
-def crossEncoderQuery(query: str, qdrant_client: QdrantClient, collection_name: str, k: int=5):
+CROSS_ENCODER_SAMPLE = 15
+def crossEncoderQuery(query: str, qdrant_client: QdrantClient, collection_name: str, k: int=8, search_filter: Filter=None):
     # This will just return alot of points from the db prior to cross-encoder filtering
     points = query_db(
         query=query, 
@@ -60,7 +62,7 @@ def hydeRetrieval(query: str, qdrant_client: QdrantClient, collection_name: str,
     return points
 
 
-def hydeCrossEncoderRetrieval(query: str, llm: ChatGoogleGenerativeAI, qdrant_client: QdrantClient, collection_name: str, k: int=5):
+def hydeCrossEncoderRetrieval(query: str, llm: ChatGoogleGenerativeAI, qdrant_client: QdrantClient, collection_name: str, k: int=8):
     new_query = generateHydePassage(query, llm)
     points = crossEncoderQuery(
         query=new_query, 
