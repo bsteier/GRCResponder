@@ -38,7 +38,7 @@ html, body {
   flex-grow: 1;
 }
 .prompt-box {
-  border-radius: 75px;
+  border-radius: 25px;
   background-color: #444444;
   color: #D9D9D9;
   padding: 15px;
@@ -51,6 +51,8 @@ html, body {
   font-size: 15px;
   border: 0;
   box-sizing: border-box;
+  resize: none;
+  transition: height 0.2s ease;
 }
 
 .prompt-box::placeholder {

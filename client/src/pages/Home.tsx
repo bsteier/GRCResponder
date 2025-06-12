@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../styles/App.css';
 import Sidebar from '../components/Sidebar';
 import MessageBox from '../components/MessageBox';
@@ -14,10 +14,15 @@ function Home() {
   const [messages, setMessages] = useState([]); 
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversationHistory, setConversationHistory] = useState([]);
+  const bottomRef = useRef(null);
 
   useEffect(() => {
     fetchConversations();
   }, []);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const fetchConversations = async () => {
     try {
@@ -98,6 +103,14 @@ function Home() {
 
   const handleQueryChange = (e) => {
     setQuery(e.target.value);
+
+  const textarea = e.target;
+  textarea.style.height = "auto";
+
+  const maxHeight = 120; // e.g., 3-4 lines
+  const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+
+  textarea.style.height = `${newHeight}px`;
   }
 
   const handleSendMessage = async () => {
@@ -194,13 +207,14 @@ function Home() {
             </MessageBox>
           ))}
         </div>
-        <input
-          type="text"
+        <div ref={bottomRef}></div>
+        <textarea
           className="prompt-box"
           placeholder="Enter a prompt for GRCResponder"
           value={query}
           onChange={handleQueryChange}
-          onKeyDown={(e) => {if(e.key === 'Enter'){handleSendMessage()}}}
+          onKeyDown={(e) => { if (e.key === 'Enter') { handleSendMessage() } }}
+          rows={1}
         />
       </div>
       {/* <PdfViewer  /> */}
