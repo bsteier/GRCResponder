@@ -2,7 +2,6 @@
 # use wrapper functions to help with testing and such
 
 from pathlib import Path
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 from langgraph.graph import MessagesState, StateGraph
 from langchain_core.tools import tool
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage
@@ -33,7 +32,7 @@ from advanced_retrieval import crossEncoderQuery
 env_path = "../../.env"
 load_dotenv(dotenv_path=env_path)
 QDRANT_CONNECT = os.getenv("QDRANT_CONNECT")
-COLLECTION_NAME = os.getenv("DOCUMENT_COLLECTION")
+COLLECTION_NAME ='GRC_Documents_Large'
 GOOGLE_API = os.getenv("GOOGLE_API_KEY")
 
 try:

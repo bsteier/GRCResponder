@@ -21,7 +21,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({ children, isUserMessage, files 
           <div dangerouslySetInnerHTML={{ __html: children as string }} />
         )
       }
-        {files && (
+        {/* {files && (
           <div className="messagebox-files">
             {files.map((file, index) => (
               <Link
@@ -33,7 +33,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({ children, isUserMessage, files 
               </Link>
             ))}
           </div>
-        )}
+        )} */}
     </div>
   );
 };
