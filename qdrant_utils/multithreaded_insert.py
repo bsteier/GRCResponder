@@ -16,7 +16,7 @@ from qdrant_client.http.models import PointStruct, VectorParams, Distance
 import threading
 import time #for monitoring
 
-load_dotenv()
+load_dotenv(dotenv_path="../.env")
 QDRANT_CONNECT = os.getenv('QDRANT_CONNECT')
 qdrant_client = QdrantClient(url=QDRANT_CONNECT)
 

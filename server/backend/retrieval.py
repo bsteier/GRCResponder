@@ -10,12 +10,13 @@ from qdrant_client.http.models import Filter
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path="../../.env")
 
 K = 8
-DOCUMENT_COLLECTION = os.getenv("DOCUMENT_COLLECTION")  # Placeholder for the ChromaDB collection
-qdrant_client = None
+print(f"DOCUMENT_COLLECTION: {os.getenv('DOCUMENT_COLLECTION')}")
 
+DOCUMENT_COLLECTION = "GRC_Documents_Large"
+qdrant_client = None
 embedding_model_name = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 embedding_function = SentenceTransformer(embedding_model_name)
 
@@ -29,25 +30,31 @@ def retrieve(query: str, k: int = 8, search_filter: Filter = None):
     """Retrieve information related to a query."""
     # Query qdrant directly
 
-    results = crossEncoderQuery(
-        query=query,
-        qdrant_client=qdrant_client,
-        collection_name=DOCUMENT_COLLECTION,
-        k=k
-    )
-    
-    # Format results for LangChain compatibility
-    retrieved_docs = []
-    for result in results:
-        doc_id = result.payload['document_id']
-        content = result.payload['text']
-        metadata = {k: v for k, v in result.payload.items() if k != 'text'} if result.payload else {}
+    print("retrieve")
+    try: 
+        results = crossEncoderQuery(
+            query=query,
+            qdrant_client=qdrant_client,
+            collection_name=DOCUMENT_COLLECTION,
+            k=k
+        )
 
-        doc = Document(page_content=content, metadata=metadata)
-        retrieved_docs.append(doc)
+        # Format results for LangChain compatibility
+        retrieved_docs = []
+        for result in results:
+            doc_id = result.payload['document_id']
+            content = result.payload['text']
+            metadata = {k: v for k, v in result.payload.items() if k != 'text'} if result.payload else {}
 
-    serialized = "\n\n".join(
-        (f"Source: {doc.metadata}\n" f"Content: {doc.page_content} Document Link: {doc.metadata.get('source_url', 'N/A')}")
-        for doc in retrieved_docs
-    )
+            doc = Document(page_content=content, metadata=metadata)
+            retrieved_docs.append(doc)
+
+        
+        serialized = "\n\n".join(
+            (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
+            for doc in retrieved_docs
+        )
+    except Exception as e:
+        print (e)
+
     return serialized, retrieved_docs

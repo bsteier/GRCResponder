@@ -9,7 +9,7 @@ for col in collections:
     print(col)
 
 # Check one specific collection (adjust name if needed)
-name = "test_collection"  # or replace with one listed above
+name = "GRC_Documents_Large"  # or replace with one listed above
 collection = client.get_or_create_collection(
     name=name,
     embedding_function=SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
