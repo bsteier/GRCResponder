@@ -88,8 +88,8 @@ def dateFilter(proceeding_date: str, year_low: int, year_high: int) -> bool:
 
 def main():
 
-    # fetcher = PROCFetcher()
-    # fetcher.saveProceedings(verbose=True,filename=PROCEEDING_FILE)
+    fetcher = PROCFetcher()
+    fetcher.saveProceedings(verbose=True,filename=PROCEEDING_FILE)
 
     proceedings = getProceedings(PROCEEDING_FILE)
 
