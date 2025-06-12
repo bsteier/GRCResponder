@@ -194,12 +194,20 @@ class PROCFetcher:
         return retVal
     
     def createJson(self, filename):
-        file = filename + '.json'
+        directory = os.path.dirname(filename)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        
+        file = filename
+        if not filename.endswith('.json'):
+            file = filename + '.json'
         with open(file, 'w') as f:
             json.dump([], f, indent=4)
 
     def appendProcs(self, proceedings, filename):
-        file = filename + '.json'
+        file = filename
+        if not filename.endswith('.json'):
+            file = filename + '.json'
         if not os.path.exists(file):
             self.createJson(filename)
         with open(file, 'r') as f:

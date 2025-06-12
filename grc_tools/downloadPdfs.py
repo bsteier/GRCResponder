@@ -5,9 +5,13 @@ import os
 import json
 import requests
 from CPUCFetcher import CPUCFetcher
+from PROCFetcher import PROCFetcher
 import time
 
-SAVE_DIR = 'D:\\CPUCDocuments'
+# This is the directory where all the proceedings along w/ their documents will be saved
+SAVE_DIR = 'D:\\TestGRC\\Proceedings'
+# This is the file that the proceedings will be saved to
+PROCEEDING_FILE = 'D:\\TestGRC\\proceedings.json'
 
 def download_pdf(link, pdf_name, save_path):
     if not os.path.exists(save_path):
@@ -66,18 +70,37 @@ def getProceedings(json_file: str):
     proceedings = []
 
     for item in data:
-        if 'proceeding_id' in item and 'filing_date' in item and len(item['filing_date']) >= 4 and int(item['filing_date'][-4::]) >= 2020:
+        if 'proceeding_id' in item and proceedingFilter(item['proceeding_id']):
             proceedings.append(item['proceeding_id'])
     
     return proceedings
 
+
+def proceedingFilter(proceeding) -> bool:
+    # this function is used to filter certain proceedings out in case a subset of the documents are being downloaded
+    return True # default behavior is to not filer out any proceedings
+    if 'filing_date' in proceeding:
+        return dateFilter(proceeding['filing_date'], 2020, 2025)
+    
+def dateFilter(proceeding_date: str, year_low: int, year_high: int) -> bool:
+    return len(proceeding_date) >= 4 and int(proceeding_date[-4::]) >= year_low and int(proceeding_date[-4::]) <= year_high
+
+
 def main():
-    proceedings = getProceedings('companyFilter/proceedings.json')
+
+    # fetcher = PROCFetcher()
+    # fetcher.saveProceedings(verbose=True,filename=PROCEEDING_FILE)
+
+    proceedings = getProceedings(PROCEEDING_FILE)
+
+    if not os.path.exists(SAVE_DIR):
+        os.makedirs(SAVE_DIR)
 
     proceedings = [proceeding for proceeding in proceedings if proceeding not in os.listdir(SAVE_DIR)]
     
     for proceeding in proceedings:
         download_proceeding(proceeding)
+
 
 
 if __name__ == "__main__":
