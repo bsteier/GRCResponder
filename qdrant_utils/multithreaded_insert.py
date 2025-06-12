@@ -20,7 +20,7 @@ load_dotenv(dotenv_path="../.env")
 QDRANT_CONNECT = os.getenv('QDRANT_CONNECT')
 qdrant_client = QdrantClient(url=QDRANT_CONNECT)
 
-LOCAL_PATH = '/workspace/CPUCDocuments/' # Replace to directory with all proceeding folders
+LOCAL_PATH = 'D:/workspace/CPUCDocuments/' # Replace to directory with all proceeding folders
 BATCH_SIZE = 256
 QUEUE_MAXSIZE = 100
 

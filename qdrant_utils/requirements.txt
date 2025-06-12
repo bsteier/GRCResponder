@@ -1,0 +1,6 @@
+fitz==0.0.1.dev2
+langchain==0.3.25
+python-dotenv==1.1.0
+qdrant_client==1.14.2
+sentence_transformers==3.4.1
+torch==2.6.0
